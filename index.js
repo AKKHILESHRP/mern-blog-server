@@ -3,12 +3,15 @@ const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
 const authRoutes = require("./Routes/AuthRoute");
-const userModel = require("./models/userModel");
+const blogRoutes = require("./Routes/Blog");
+const cookieParser = require("cookie-parser");
 require("dotenv").config
 
 app.use(express.json());
 app.use(cors());
-app.use("/", authRoutes);
+app.use(cookieParser());
+app.use("/auth", authRoutes);
+app.use("/blog", blogRoutes);
 
 mongoose.connect("mongodb://localhost:27017/Mern-Blog")
 .then(() => console.log("Database connected"))
