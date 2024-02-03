@@ -1,14 +1,17 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-function checkAuth(req, res, next) {
-  const authToken = req.cookies.authToken;
-  const refreshToken = req.cookies.refreshToken;
-  console.log("Check auth");
+function checkAuthToken(req, res, next) {
+  const authToken = req.cookies.auth_token;
+  const refreshToken = req.cookies.refresh_token;  
+  console.log("Auth Called");
+  // prints if no auth or refresh token found.
   if (!authToken || !refreshToken) {
-    return res.status(401).send({
-      message: "Authentication failed: No authtoken or refreshtoken found",
-    });
+    return res
+      .status(401)
+      .send({
+        message: "Authentication failed: No authToke or refreshToken provided.",
+      });
   }
 
   jwt.verify(authToken, process.env.AUTH_SECRET, (err, decoded) => {
@@ -17,11 +20,16 @@ function checkAuth(req, res, next) {
         refreshToken,
         process.env.REFRESH_SECRET,
         (refreshErr, refreshDecoded) => {
+          // refreshToken is expired and access token is expired
           if (refreshErr) {
             return res
               .status(401)
-              .send({ message: "Authentication failed: Both tokens failed" });
-          } else {
+              .send({
+                message: "Authentication failed: Both tokens are invalid.",
+              });
+          }
+          // refresh not expired & access token is expired
+          else {
             const newAuthToken = jwt.sign(
               { userId: refreshDecoded.userId },
               process.env.AUTH_SECRET,
@@ -32,18 +40,20 @@ function checkAuth(req, res, next) {
               process.env.REFRESH_SECRET,
               { expiresIn: "40m" }
             );
-            res.cookie("authToken", newAuthToken, { httpOnly: true });
-            res.cookie("refreshToken", newRefreshToken, { httpOnly: true });
+            res.cookie("auth_token", newAuthToken, { httpOnly: true });
+            res.cookie("refresh_token", newRefreshToken, { httpOnly: true });
             req.userId = refreshDecoded.userId;
             next();
           }
         }
       );
-    } else {
+    }
+    // if token not expired continue to the next
+    else {
       req.userId = decoded.userId;
       next();
     }
   });
 }
 
-module.exports = checkAuth;
+module.exports = checkAuthToken;

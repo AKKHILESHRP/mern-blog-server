@@ -3,7 +3,9 @@ const blogModel = require("../models/blogSchema");
 const checkAuthToken = require("../middleware/checkAuthToken");
 const router = express.Router();
 
-router.get("/test", checkAuthToken, (req, res) => {
+router.use(checkAuthToken);
+
+router.get("/test", checkAuthToken, async (req, res) => {
   res.send({ message: "hello from blog" });
 });
 
