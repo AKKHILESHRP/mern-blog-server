@@ -99,4 +99,26 @@ router.delete("/:id", checkAuthToken, checkBlogAuth, async (req, res) => {
   }
 });
 
+router.get("/", async (req, res) => {
+  try {
+    const search = req.body.search || "";
+    const page = parseInt(req.body.page) || 1;
+    const perPage = 2;
+    const searchQuery = new RegExp(search, "i");
+    const totalBlogs = await blogModel.countDocuments({ title: searchQuery });
+    const totalPages = Math.ceil(totalBlogs / perPage);
+    if (page < 1 || page > totalPages) {
+      return res.status(400).send({ message: "Invalid page number" });
+    }
+    const skip = (page - 1) * perPage;
+    const blogs = await blogModel
+      .find({ title: searchQuery })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(perPage);
+    res.send({ blogs, totalPages, currentPage: page });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
 module.exports = router;
