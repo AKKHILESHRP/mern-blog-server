@@ -11,16 +11,16 @@ const blogSchema = mongoose.Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     image: { type: String, required: true },
-    paragraphs: { type: [paragraphSchema], default: [] },
+    category: { type: String, required: true },
+    paragraphs: { type: [paragraphSchema] },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
       ref: "users",
+      required: true,
     },
   },
   { timestamps: true }
 );
 
 const blogModel = mongoose.model("blogs", blogSchema);
-
 module.exports = blogModel;
