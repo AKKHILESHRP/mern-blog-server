@@ -91,8 +91,11 @@ router.delete("/:id", checkAuthToken, checkBlogAuth, async (req, res) => {
     if (!user) {
       return res.status(404).send({ message: "User not found" });
     }
-    user.blogs.pull(req.params.id);
-    await user.save();
+    const deleteIndex = userModel.blogs.indexOf(req.params.id);
+    if (deleteIndex !== -1) {
+      userModel.blogs.splice(deleteIndex, 1);
+      await userModel.save();
+    }
     res.send({ message: "Blog deleted successfully", deletedBlog });
   } catch (error) {
     res.status(500).send({ message: error.message });
