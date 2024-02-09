@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const nodeMailer = require("nodemailer");
 const errorHandler = require("../middleware/errorMiddleware");
+const checkAuthToken = require("../middleware/checkAuthToken");
 require("dotenv").config();
 
 const transpoter = nodeMailer.createTransport({
@@ -73,6 +74,10 @@ router.post("/login", async (req, res, next) => {
     next(error);
   }
 });
+
+router.get("/checklogin", checkAuthToken, async (req, res) => {
+  res.send({ message: "User authenticated successfully" });
+})
 
 router.use(errorHandler);
 
