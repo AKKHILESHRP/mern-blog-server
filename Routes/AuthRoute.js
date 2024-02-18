@@ -70,6 +70,7 @@ router.post("/login", async (req, res, next) => {
     res.cookie("auth_token", authToken, { httpOnly: true });
     res.cookie("refresh_token", refreshToken, { httpOnly: true });
     res.send({ message: "Login successful" });
+    res.send({ auth_token: authToken, refresh_token: refreshToken });
   } catch (error) {
     next(error);
   }
