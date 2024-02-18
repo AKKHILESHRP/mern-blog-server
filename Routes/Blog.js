@@ -24,11 +24,11 @@ async function checkBlogAuth(req, res, next) {
 
 router.post("/", checkAuthToken, async (req, res) => {
   try {
-    const { title, description, image, paragraphs, category } = req.body;
+    const { title, description, imageUrl, paragraphs, category } = req.body;
     const blog = new blogModel({
       title,
       description,
-      image,
+      imageUrl,
       paragraphs,
       category,
       owner: req.userId,
@@ -60,13 +60,13 @@ router.get("/:id", async (req, res) => {
 
 router.put("/:id", checkAuthToken, checkBlogAuth, async (req, res) => {
   try {
-    const { title, description, image, paragraphs, category } = req.body;
+    const { title, description, imageUrl, paragraphs, category } = req.body;
     const updatedBlog = await blogModel.findByIdAndUpdate(
       req.params.id,
       {
         title,
         description,
-        image,
+        imageUrl,
         paragraphs,
         category,
       },
