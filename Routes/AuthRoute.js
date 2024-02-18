@@ -58,15 +58,11 @@ router.post("/login", async (req, res, next) => {
     const isUser = await bcrypt.compare(password, user.password);
     if (!isUser) res.status(400).send({ message: "Invalid credentials" });
     const authToken = jwt.sign({ userId: user._id }, process.env.AUTH_SECRET, {
-      expiresIn: "10m",
+      expiresIn: "10m"
     });
-    const refreshToken = jwt.sign(
-      { userId: user._id },
-      process.env.REFRESH_SECRET,
-      {
-        expiresIn: "40m",
-      }
-    );
+    const refreshToken = jwt.sign({ userId: user._id }, process.env.REFRESH_SECRET, {
+      expiresIn: "40m",
+    });
     res.cookie("auth_token", authToken, { httpOnly: true });
     res.cookie("refresh_token", refreshToken, { httpOnly: true });
     res.send({ message: "Login successful", token1: authToken, token2: refreshToken });
